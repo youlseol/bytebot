@@ -68,6 +68,54 @@ RUN apt-get update && apt-get install -y \
     && update-alternatives --set x-www-browser /usr/bin/firefox-esr \
     && fc-cache -f -v
 
+# Install Google Chrome (amd64) or Chromium (arm64)
+RUN ARCH=$(dpkg --print-architecture) && \
+    if [ "$ARCH" = "amd64" ]; then \
+        # Install Google Chrome for AMD64
+        echo "Installing Google Chrome for AMD64 architecture..." && \
+        wget -qO /tmp/google-chrome.deb https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb && \
+        apt-get update && apt-get install -y /tmp/google-chrome.deb && \
+        rm -f /tmp/google-chrome.deb && \
+        google-chrome --version && \
+        apt-get clean && rm -rf /var/lib/apt/lists/*; \
+    elif [ "$ARCH" = "arm64" ]; then \
+        # Install Chromium for ARM64 using Playwright's pre-built binary
+        echo "Installing Chromium for ARM64 architecture..." && \
+        apt-get update && apt-get install -y wget unzip libglib2.0-0 libnss3 libnspr4 libatk1.0-0 libatk-bridge2.0-0 \
+            libcups2 libdrm2 libxkbcommon0 libxcomposite1 libxdamage1 libxfixes3 libxrandr2 \
+            libgbm1 libpango-1.0-0 libcairo2 libasound2 libatspi2.0-0 libxshmfence1 && \
+        # Download Chromium from Playwright builds (ARM64 compatible)
+        mkdir -p /opt/chromium && \
+        wget -O /tmp/chromium.zip "https://playwright.azureedge.net/builds/chromium/1148/chromium-linux-arm64.zip" && \
+        cd /opt/chromium && unzip /tmp/chromium.zip && \
+        mv chrome-linux/* . && rmdir chrome-linux && \
+        # Create wrapper script
+        echo '#!/bin/bash' > /usr/bin/chromium && \
+        echo 'exec /opt/chromium/chrome --no-sandbox --disable-dev-shm-usage --disable-gpu "$@"' >> /usr/bin/chromium && \
+        chmod +x /usr/bin/chromium && \
+        ln -sf /usr/bin/chromium /usr/bin/google-chrome && \
+        # Create desktop file
+        mkdir -p /usr/share/applications && \
+        echo '[Desktop Entry]' > /usr/share/applications/chromium.desktop && \
+        echo 'Version=1.0' >> /usr/share/applications/chromium.desktop && \
+        echo 'Name=Chromium Web Browser' >> /usr/share/applications/chromium.desktop && \
+        echo 'GenericName=Web Browser' >> /usr/share/applications/chromium.desktop && \
+        echo 'Comment=Access the Internet' >> /usr/share/applications/chromium.desktop && \
+        echo 'Exec=/usr/bin/chromium %U' >> /usr/share/applications/chromium.desktop && \
+        echo 'Terminal=false' >> /usr/share/applications/chromium.desktop && \
+        echo 'Type=Application' >> /usr/share/applications/chromium.desktop && \
+        echo 'Icon=/opt/chromium/product_logo_256.png' >> /usr/share/applications/chromium.desktop && \
+        echo 'Categories=Network;WebBrowser;' >> /usr/share/applications/chromium.desktop && \
+        echo 'MimeType=text/html;text/xml;application/xhtml+xml;' >> /usr/share/applications/chromium.desktop && \
+        echo 'StartupNotify=true' >> /usr/share/applications/chromium.desktop && \
+        # Cleanup
+        rm -rf /tmp/chromium.zip && \
+        apt-get clean && rm -rf /var/lib/apt/lists/* && \
+        echo "Chromium installed successfully"; \
+    else \
+        echo "Chrome/Chromium is not available for $ARCH architecture."; \
+    fi
+
 
 # Install 1Password based on architecture
 RUN ARCH=$(dpkg --print-architecture) && \
@@ -227,11 +275,19 @@ RUN chown -R user:user /home/user
 RUN chmod -R 755 /home/user
 
 RUN mkdir -p /home/user/Desktop && \
-    cp -f /usr/share/applications/firefox.desktop /home/user/Desktop/ && \
-    cp -f /usr/share/applications/thunderbird.desktop /home/user/Desktop/ && \
-    cp -f /usr/share/applications/1password.desktop /home/user/Desktop/ && \
-    cp -f /usr/share/applications/code.desktop /home/user/Desktop/ && \
-    cp -f /usr/share/applications/terminal.desktop /home/user/Desktop/ && \
+    for desktop_file in \
+        firefox.desktop \
+        google-chrome.desktop \
+        chromium-browser.desktop \
+        chromium.desktop \
+        thunderbird.desktop \
+        1password.desktop \
+        code.desktop \
+        terminal.desktop; do \
+      if [ -f /usr/share/applications/"$desktop_file" ]; then \
+        cp -f /usr/share/applications/"$desktop_file" /home/user/Desktop/; \
+      fi; \
+    done && \
     chmod +x /home/user/Desktop/*.desktop && \
     chown user:user /home/user/Desktop/*.desktop
 

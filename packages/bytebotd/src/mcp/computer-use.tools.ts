@@ -510,6 +510,7 @@ V, W, X, Y, Z
     parameters: z.object({
       application: z.enum([
         'firefox',
+        'chrome',
         '1password',
         'thunderbird',
         'vscode',
@@ -524,6 +525,7 @@ V, W, X, Y, Z
   }: {
     application:
       | 'firefox'
+      | 'chrome'
       | '1password'
       | 'thunderbird'
       | 'vscode'

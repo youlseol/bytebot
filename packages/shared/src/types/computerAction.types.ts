@@ -3,6 +3,7 @@ export type Button = "left" | "right" | "middle";
 export type Press = "up" | "down";
 export type Application =
   | "firefox"
+  | "chrome"
   | "1password"
   | "thunderbird"
   | "vscode"

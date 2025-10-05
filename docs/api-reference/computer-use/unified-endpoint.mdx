@@ -329,6 +329,7 @@ Switch between different applications or navigate to the desktop/directory.
 
 **Available Applications:**
 - `firefox` - Mozilla Firefox web browser
+- `chrome` - Google Chrome web browser (falls back to Chromium where available)
 - `1password` - Password manager
 - `thunderbird` - Email client
 - `vscode` - Visual Studio Code editor
@@ -341,7 +342,7 @@ Switch between different applications or navigate to the desktop/directory.
 ```json
 {
   "action": "application",
-  "application": "firefox"
+  "application": "chrome"
 }
 ```
 
@@ -516,8 +517,8 @@ const bytebot = {
 
 // Example usage:
 async function example() {
-  // Switch to Firefox
-  await bytebot.switchApplication('firefox');
+  // Switch to Chrome
+  await bytebot.switchApplication('chrome');
   
   // Navigate to a website
   await bytebot.moveMouse(100, 35);

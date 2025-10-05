@@ -20,6 +20,7 @@ interface ComputerToolContentNormalProps {
 
 const applicationMap: Record<Application, string> = {
   firefox: "Firefox",
+  chrome: "Google Chrome",
   "1password": "1Password",
   thunderbird: "Thunderbird",
   vscode: "Visual Studio Code",

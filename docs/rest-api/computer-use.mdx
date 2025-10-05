@@ -411,7 +411,7 @@ No parameters required.
 
 <Accordion title="application">
   <ParamField body="application" type="string" required>
-    The application to switch to. Available options: `firefox`, `1password`, `thunderbird`, `vscode`, `terminal`, `desktop`, `directory`.
+    The application to switch to. Available options: `firefox`, `chrome`, `1password`, `thunderbird`, `vscode`, `terminal`, `desktop`, `directory`.
   </ParamField>
 
 **Example Request**
@@ -419,12 +419,13 @@ No parameters required.
 ```json
 {
   "action": "application",
-  "application": "firefox"
+  "application": "chrome"
 }
 ```
 
 **Available Applications:**
 - `firefox` - Mozilla Firefox web browser
+- `chrome` - Google Chrome web browser (falls back to Chromium where available)
 - `1password` - Password manager
 - `thunderbird` - Email client
 - `vscode` - Visual Studio Code editor

@@ -45,7 +45,8 @@ The Bytebot Desktop Environment (also called Bytebot Core) is a complete Linux d
 
 <CardGroup cols={2}>
   <Card title="Web Browser" icon="globe">
-    - Firefox ESR (Extended Support Release)
+    - Firefox ESR (Extended Support Release) - All architectures
+    - Google Chrome (AMD64) / Chromium (ARM64)
     - Pre-configured for automation
     - Clean profile without distractions
   </Card>
@@ -66,6 +67,13 @@ The Bytebot Desktop Environment (also called Bytebot Core) is a complete Linux d
     - Python 3 environment
   </Card>
 </CardGroup>
+
+<Note>
+  **Browser Support by Architecture**: 
+  - **AMD64/x86_64**: Firefox ESR + Google Chrome Stable
+  - **ARM64/aarch64**: Firefox ESR + Chromium (extracted from snap package)
+  - Both Chrome/Chromium and Firefox work great for automation tasks
+</Note>
 
 ### Core Services
 

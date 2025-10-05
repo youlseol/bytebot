@@ -294,6 +294,7 @@ export const _applicationTool = {
         type: 'string' as const,
         enum: [
           'firefox',
+          'chrome',
           '1password',
           'thunderbird',
           'vscode',

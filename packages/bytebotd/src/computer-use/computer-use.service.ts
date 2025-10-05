@@ -286,6 +286,7 @@ export class ComputerUseService {
 
     const commandMap: Record<string, string> = {
       firefox: 'firefox-esr',
+      chrome: 'google-chrome',
       '1password': '1password',
       thunderbird: 'thunderbird',
       vscode: 'code',
@@ -293,8 +294,53 @@ export class ComputerUseService {
       directory: 'thunar',
     };
 
+    const command = commandMap[action.application];
+
+    if (!command) {
+      throw new Error(`Unsupported application: ${action.application}`);
+    }
+
+    let commandPath = '';
+    try {
+      const { stdout } = await execAsync(`command -v ${command}`);
+      commandPath = stdout.trim();
+      if (!commandPath) {
+        throw new Error('No command path returned');
+      }
+    } catch (error) {
+      throw new Error(
+        `Application "${action.application}" is not installed or not in PATH. Expected binary: ${command}`,
+      );
+    }
+
+    let resolvedCommandName = path.basename(commandPath);
+
+    if (action.application === 'chrome') {
+      try {
+        const { stdout } = await execAsync(`readlink -f "${commandPath}"`);
+        const resolvedPath = stdout.trim();
+        if (resolvedPath) {
+          resolvedCommandName = path.basename(resolvedPath);
+        }
+      } catch (error) {
+        this.logger.debug(
+          `Unable to resolve chrome command link: ${(error as Error).message}`,
+        );
+      }
+    }
+
+    const chromeWindowClass =
+      action.application === 'chrome'
+        ? resolvedCommandName === 'chromium-browser'
+          ? 'chromium-browser.Chromium-browser'
+          : resolvedCommandName === 'chromium'
+            ? 'chromium.Chromium'
+            : 'google-chrome.Google-chrome'
+        : 'google-chrome.Google-chrome';
+
     const processMap: Record<Application, string> = {
       firefox: 'Navigator.firefox-esr',
+      chrome: chromeWindowClass,
       '1password': '1password.1Password',
       thunderbird: 'Mail.thunderbird',
       vscode: 'code.Code',
@@ -348,12 +394,7 @@ export class ComputerUseService {
     }
 
     // application is not open, open it - fire and forget
-    spawnAndForget('sudo', [
-      '-u',
-      'user',
-      'nohup',
-      commandMap[action.application],
-    ]);
+    spawnAndForget('sudo', ['-u', 'user', 'nohup', command]);
 
     this.logger.log(`Application ${action.application} launched`);
 

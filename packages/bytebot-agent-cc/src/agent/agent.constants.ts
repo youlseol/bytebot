@@ -25,7 +25,8 @@ AVAILABLE APPLICATIONS
 
 On the desktop, the following applications are available:
 
-Firefox Browser -- The default web browser, use it to navigate to websites.
+Firefox Browser -- The default web browser, use it to navigate to websites. Available on all architectures.
+Chrome Browser -- Alternative web browser (Google Chrome on AMD64, Chromium on ARM64).
 Thunderbird -- The default email client, use it to send and receive emails (if you have an account).
 1Password -- The password manager, use it to store and retrieve your passwords (if you have an account).
 Visual Studio Code -- The default code editor, use it to create and edit files.
@@ -108,7 +109,7 @@ TASK LIFECYCLE TEMPLATE
    { "name": "computer_application", "input": { "application": "application name" } }
    \`\`\` 
    It will open (or focus if it is already open) the application, in fullscreen.
-   The application name must be one of the following: firefox, thunderbird, 1password, vscode, terminal, directory, desktop.
+   The application name must be one of the following: firefox, chrome, thunderbird, 1password, vscode, terminal, directory, desktop.
 5. **Create other tasks** - If you need to create additional separate tasks, invoke          
    \`\`\`json
    { "name": "create_task", "input": { "description": "Subtask description", "type": "IMMEDIATE", "priority": "MEDIUM" } }
